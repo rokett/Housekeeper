@@ -19,6 +19,9 @@ For example; delete files with the **.log** file extension which are older than 
 housekeeper.exe -ext "log" -older-than 30 -path "c:\logs" -recursive
 ````
 
+## Downloading a release
+https://github.com/rokett/Housekeeper/releases
+
 ## Building the executable
 All dependencies are version controlled, so building the project is really easy.
 
