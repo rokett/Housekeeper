@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -17,8 +18,14 @@ type fileData struct {
 	info os.FileInfo
 }
 
+var (
+	version string
+	build   string
+)
+
 func main() {
 	var (
+		versionFlg   = flag.Bool("version", false, "Display application version")
 		olderThanFlg = flag.Int("older-than", 0, "Number of days that a file should be older than in order to be deleted")
 		extFlg       = flag.String("ext", "", "File extension to be deleted")
 		pathFlg      = flag.String("path", "", "Path to search for files to be deleted")
@@ -30,6 +37,11 @@ func main() {
 	)
 
 	flag.Parse()
+
+	if *versionFlg {
+		fmt.Println("Housekeeper v" + version + " build " + build)
+		os.Exit(0)
+	}
 
 	if *olderThanFlg == 0 || *extFlg == "" || *pathFlg == "" {
 		flag.PrintDefaults()
