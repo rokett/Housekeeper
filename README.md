@@ -12,12 +12,15 @@ Command line flags are used to pass in parameters.
 | recursive  | Search directory path recursively.                                       | false         |
 | test       | Carry out a test run.  No files will be deleted.                         | false         |
 | debug      | Enable debug logging.                                                    | false         |
+| version    | Display version and build number                                         | false         |
 
 For example; delete files with the **.log** file extension which are older than **30** days and are anywhere within the **c:\logs** directory.
 
 ````
 housekeeper.exe -ext "log" -older-than 30 -path "c:\logs" -recursive
 ````
+
+Logs are printed to stdout which means you can do with them as you wish.  A good option is to pipe the output to another application which sends the logs where you want.
 
 ## Downloading a release
 https://github.com/rokett/Housekeeper/releases
