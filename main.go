@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -17,10 +18,16 @@ type fileData struct {
 	info os.FileInfo
 }
 
+var (
+	version string
+	build   string
+)
+
 func main() {
 	var (
+		versionFlg   = flag.Bool("version", false, "Display application version")
 		olderThanFlg = flag.Int("older-than", 0, "Number of days that a file should be older than in order to be deleted")
-		extFlg       = flag.String("ext", "", "File extension to be deleted")
+		extFlg       = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
 		pathFlg      = flag.String("path", "", "Path to search for files to be deleted")
 		recursiveFlg = flag.Bool("recursive", false, "Search all subfolders as well")
 		testFlg      = flag.Bool("test", false, "Test run")
@@ -30,6 +37,11 @@ func main() {
 	)
 
 	flag.Parse()
+
+	if *versionFlg {
+		fmt.Println("Housekeeper v" + version + " build " + build)
+		os.Exit(0)
+	}
 
 	if *olderThanFlg == 0 || *extFlg == "" || *pathFlg == "" {
 		flag.PrintDefaults()
@@ -53,7 +65,7 @@ func main() {
 	d := time.Now().AddDate(0, 0, -*olderThanFlg)
 	level.Debug(logger).Log("older-than", d)
 
-	ext := "." + strings.Trim(*extFlg, "*.")
+	ext := "." + strings.Trim(*extFlg, ".")
 	level.Debug(logger).Log("extension", ext)
 
 	// Build the list of files differently if we're running a recursive search or not
@@ -79,27 +91,18 @@ func main() {
 			}
 
 			fileInfo = append(fileInfo, f)
-			//if !f.IsDir() && f.ModTime().Before(d) && filepath.Ext(path) == ext {
-			/*if *testFlg {
-				level.Info(logger).Log("file", path, "msg", "test: would be deleted")
 
-				return nil
-			}
-
-			err := os.Remove(path)
-			if err != nil {
-				level.Error(logger).Log("file", path, "msg", err)
-			} else {
-				level.Info(logger).Log("file", path, "msg", "deleted")
-			}*/
-			//}
 			return nil
 		})
 	}
 
 	// Now process the file list
 	for _, file := range fileInfo {
-		if !file.info.IsDir() && file.info.ModTime().Before(d) && filepath.Ext(file.path) == ext {
+		if !file.info.IsDir() && file.info.ModTime().Before(d) {
+			if ext != ".*" && filepath.Ext(file.path) != ext {
+				continue
+			}
+
 			if *testFlg {
 				level.Info(logger).Log("file", file.path, "msg", "test: would be deleted")
 				continue
