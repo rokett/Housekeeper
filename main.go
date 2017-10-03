@@ -19,6 +19,7 @@ type fileData struct {
 }
 
 var (
+	app     = "Housekeeper"
 	version string
 	build   string
 )
@@ -39,7 +40,7 @@ func main() {
 	flag.Parse()
 
 	if *versionFlg {
-		fmt.Println("Housekeeper v" + version + " build " + build)
+		fmt.Println(app + " v" + version + " build " + build)
 		os.Exit(0)
 	}
 
@@ -49,7 +50,7 @@ func main() {
 	}
 
 	logger = log.NewLogfmtLogger(os.Stdout)
-	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", "Housekeeper")
+	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app)
 
 	if *debug {
 		logger = level.NewFilter(logger, level.AllowDebug())
