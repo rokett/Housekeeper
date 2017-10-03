@@ -1,7 +1,9 @@
 # Housekeeper
+
 Small app to delete specified files older than the specified number days from a specified directory.
 
 ## Usage
+
 Command line flags are used to pass in parameters.
 
 | Flag       | Description                                                              | Default Value |
@@ -16,16 +18,18 @@ Command line flags are used to pass in parameters.
 
 For example; delete files with the **.log** file extension which are older than **30** days and are anywhere within the **c:\logs** directory.
 
-````
+````Batchfile
 housekeeper.exe -ext "log" -older-than 30 -path "c:\logs" -recursive
 ````
 
 Logs are printed to stdout which means you can do with them as you wish.  A good option is to pipe the output to another application which sends the logs where you want.
 
 ## Downloading a release
-https://github.com/rokett/Housekeeper/releases
+
+<https://github.com/rokett/Housekeeper/releases>
 
 ## Building the executable
+
 All dependencies are version controlled, so building the project is really easy.
 
 1. Clone the repository locally.
