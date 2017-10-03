@@ -6,7 +6,7 @@ Command line flags are used to pass in parameters.
 
 | Flag       | Description                                                              | Default Value |
 | ---------- | ------------------------------------------------------------------------ | ------------- |
-| ext        | Files matching the extension will be deleted.                            | none          |
+| ext        | Files matching the extension will be deleted. Use * to match all files.  | none          |
 | older-than | Files which are older than the number of days specified will be deleted. | none          |
 | path       | Path to search for files to be deleted.                                  | none          |
 | recursive  | Search directory path recursively.                                       | false         |
