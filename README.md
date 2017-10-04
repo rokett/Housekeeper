@@ -34,4 +34,4 @@ All dependencies are version controlled, so building the project is really easy.
 
 1. Clone the repository locally.
 2. From within the repository directory run `make.bat build`.
-3. Hey presto, you have an executable..
+3. Hey presto, you have an executable.
