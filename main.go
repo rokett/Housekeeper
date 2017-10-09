@@ -35,6 +35,7 @@ func main() {
 		debug        = flag.Bool("debug", false, "Enable debugging?")
 		logger       log.Logger
 		fileInfo     []fileData
+		processed    int64
 	)
 
 	flag.Parse()
@@ -49,8 +50,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	processed = 0
+
 	logger = log.NewLogfmtLogger(os.Stdout)
-	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app)
+	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app, "ext", *extFlg)
 
 	if *debug {
 		logger = level.NewFilter(logger, level.AllowDebug())
@@ -104,6 +107,8 @@ func main() {
 				continue
 			}
 
+			processed = processed + 1
+
 			if *testFlg {
 				level.Info(logger).Log("file", file.path, "msg", "test: would be deleted")
 				continue
@@ -116,5 +121,9 @@ func main() {
 				level.Info(logger).Log("file", file.path, "msg", "deleted")
 			}
 		}
+	}
+
+	if processed == 0 {
+		level.Info(logger).Log("msg", "no files found to be deleted")
 	}
 }
