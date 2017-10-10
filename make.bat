@@ -3,7 +3,7 @@ SETLOCAL
 
 set _TARGETS=build
 
-set VERSION=0.2.1
+set VERSION=0.2.2
 set BINARY-X86=housekeeper_%VERSION%_Windows_32bit.exe
 set BINARY-X64=housekeeper_%VERSION%_Windows_64bit.exe
 
