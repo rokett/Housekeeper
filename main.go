@@ -53,7 +53,7 @@ func main() {
 	processed = 0
 
 	logger = log.NewLogfmtLogger(os.Stdout)
-	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app, "ext", *extFlg)
+	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app, "ext", *extFlg, "path", *pathFlg, "version", "v"+version, "build", build, "older-than", *olderThanFlg, "recursive", *recursiveFlg)
 
 	if *debug {
 		logger = level.NewFilter(logger, level.AllowDebug())
@@ -62,7 +62,7 @@ func main() {
 	}
 
 	if _, err := os.Stat(*pathFlg); os.IsNotExist(err) {
-		level.Error(logger).Log("path", *pathFlg, "msg", "path does not exist")
+		level.Error(logger).Log("msg", "path does not exist")
 		os.Exit(1)
 	}
 
