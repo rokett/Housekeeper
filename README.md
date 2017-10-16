@@ -32,6 +32,6 @@ Logs are printed to stdout which means you can do with them as you wish.  A good
 
 All dependencies are version controlled, so building the project is really easy.
 
-1. Clone the repository locally.
+1. `go get github.com/rokett/housekeeper`.
 2. From within the repository directory run `make.bat build`.
 3. Hey presto, you have an executable.
