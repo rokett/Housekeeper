@@ -22,7 +22,9 @@ For example; delete files with the **.log** file extension which are older than 
 housekeeper.exe -ext "log" -older-than 30 -path "c:\logs" -recursive
 ````
 
-Logs are printed to stdout which means you can do with them as you wish.  A good option is to pipe the output to another application which sends the logs where you want.
+Logs are printed to the Windows Event Log (if on Windows) and stdout which means you can do with them as you wish.  A good option is to pipe the output to another application which sends the logs where you want.
+
+Logging to the Windows Event Log will require permissions to create an event source.
 
 ## Downloading a release
 

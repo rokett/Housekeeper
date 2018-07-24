@@ -11,6 +11,8 @@ import (
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+
+	"golang.org/x/sys/windows/svc/eventlog"
 )
 
 type fileData struct {
@@ -53,7 +55,7 @@ func main() {
 	processed = 0
 
 	logger = log.NewLogfmtLogger(os.Stdout)
-	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app, "ext", *extFlg, "path", *pathFlg, "version", "v"+version, "build", build, "older-than", *olderThanFlg, "recursive", *recursiveFlg)
+	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app, "ext", *extFlg, "path", *pathFlg, "version", "v"+version, "build", build, "older-than", *olderThanFlg, "recursive", *recursiveFlg, "test", *testFlg)
 
 	if *debug {
 		logger = level.NewFilter(logger, level.AllowDebug())
@@ -61,8 +63,34 @@ func main() {
 		logger = level.NewFilter(logger, level.AllowInfo())
 	}
 
+	var el *eventlog.Log
+	el, err := eventlog.Open(app)
+	if err != nil {
+		msg := fmt.Sprintf("unable to open event log. %s", err)
+		level.Error(logger).Log("msg", msg)
+
+		err := eventlog.InstallAsEventCreate(app, eventlog.Error|eventlog.Warning|eventlog.Info)
+		if err != nil {
+			msg := fmt.Sprintf("unable to create event source. %s", err)
+			level.Error(logger).Log("msg", msg)
+			os.Exit(1)
+		}
+
+		el, err = eventlog.Open(app)
+		if err != nil {
+			msg := fmt.Sprintf("unable to open event log after creating event source. %s", err)
+			level.Error(logger).Log("msg", msg)
+			os.Exit(1)
+		}
+	}
+
+	msg := fmt.Sprintf("Starting %s\nVersion %s\nBuild %s\next: %s\npath: %s\nolder-than: %d\nrecursive: %t\ntest: %t", app, version, build, *extFlg, *pathFlg, *olderThanFlg, *recursiveFlg, *testFlg)
+	el.Info(1, msg)
+
 	if _, err := os.Stat(*pathFlg); os.IsNotExist(err) {
-		level.Error(logger).Log("msg", "path does not exist")
+		msg := fmt.Sprintf("path, %s, does not exist", *pathFlg)
+		level.Error(logger).Log("msg", msg)
+		el.Error(2, msg)
 		os.Exit(1)
 	}
 
@@ -72,11 +100,16 @@ func main() {
 	ext := "." + strings.Trim(*extFlg, ".")
 	level.Debug(logger).Log("extension", ext)
 
+	msg = fmt.Sprintf("delete files with extension %s older than %d days", ext, *olderThanFlg)
+	el.Info(3, msg)
+
 	// Build the list of files differently if we're running a recursive search or not
 	if !*recursiveFlg {
 		files, err := ioutil.ReadDir(*pathFlg)
 		if err != nil {
-			level.Error(logger).Log("msg", err)
+			msg := fmt.Sprintf("unable to read directory; %s", err)
+			level.Error(logger).Log("msg", msg)
+			el.Error(4, msg)
 		}
 
 		for _, file := range files {
@@ -111,19 +144,37 @@ func main() {
 
 			if *testFlg {
 				level.Info(logger).Log("file", file.path, "msg", "test: would be deleted")
+
+				msg := fmt.Sprintf("testing: %s would be deleted", file.path)
+				el.Info(5, msg)
+
 				continue
 			}
 
 			err := os.Remove(file.path)
 			if err != nil {
 				level.Error(logger).Log("file", file.path, "msg", err)
+
+				msg := fmt.Sprintf("unable to delete %s; %s", file.path, err)
+				el.Error(6, msg)
 			} else {
 				level.Info(logger).Log("file", file.path, "msg", "deleted")
+
+				msg := fmt.Sprintf("%s deleted", file.path)
+				el.Info(7, msg)
 			}
 		}
 	}
 
 	if processed == 0 {
 		level.Info(logger).Log("msg", "no files found to be deleted")
+		el.Info(8, "no files found to be deleted")
+	}
+
+	err = el.Close()
+	if err != nil {
+		msg := fmt.Sprintf("unable to close event log. %s", err)
+		level.Error(logger).Log("msg", msg)
+		os.Exit(1)
 	}
 }
