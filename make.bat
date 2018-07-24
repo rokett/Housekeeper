@@ -4,9 +4,9 @@ SETLOCAL
 set _TARGETS=build
 
 set APP=Housekeeper
-set VERSION=0.2.2
-set BINARY-X86=%APP%_%VERSION%_Windows_32bit.exe
-set BINARY-X64=%APP%_%VERSION%_Windows_64bit.exe
+set VERSION=1.0.0
+set BINARY-X86=%APP%_Windows_32bit.exe
+set BINARY-X64=%APP%_Windows_64bit.exe
 
 REM Set build number from git commit hash
 for /f %%i in ('git rev-parse HEAD') do set BUILD=%%i

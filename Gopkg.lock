@@ -25,9 +25,15 @@
   packages = ["."]
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["windows","windows/registry","windows/svc/eventlog"]
+  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d3b2df4168cd524309f718fad2b35ae0f1d8bdae53cd6f05702e1bebfc0e4453"
+  inputs-digest = "e175e796e4c7b0e7af9e2908fcbea4087c519d713bca364c8ecf1d43f80200ba"
   solver-name = "gps-cdcl"
   solver-version = 1
