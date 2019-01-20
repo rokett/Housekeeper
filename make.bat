@@ -1,23 +1,17 @@
 @echo off
 SETLOCAL
 
-set _TARGETS=build
-
 set APP=Housekeeper
-set VERSION=1.0.0
-set BINARY-X86=%APP%_Windows_32bit.exe
-set BINARY-X64=%APP%_Windows_64bit.exe
+set VERSION=1.1.0
+set BINARY-X86=%APP%_%VERSION%.windows.386.exe
+set BINARY-X64=%APP%_%VERSION%.windows.amd64.exe
 
 REM Set build number from git commit hash
 for /f %%i in ('git rev-parse HEAD') do set BUILD=%%i
 
-if [%1]==[] goto usage
-
-REM *** CHECK THAT VALID ARG IS PASSED ***
-
 set LDFLAGS=-ldflags "-X main.version=%VERSION% -X main.build=%BUILD%"
 
-goto %1
+goto build
 
 :build
     set GOOS=windows
@@ -33,13 +27,6 @@ goto %1
     go build -o %BINARY-X64% %LDFLAGS%
 
     goto :finalise
-
-:usage
-	echo usage: make [target]
-	echo.
-	echo target is one of {%_TARGETS%}.
-	exit /b 2
-	goto :eof
 
 :finalise
     set GOOS=

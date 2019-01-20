@@ -28,11 +28,11 @@ var (
 
 func main() {
 	var (
-		versionFlg   = flag.Bool("version", false, "Display application version")
-		olderThanFlg = flag.Int("older-than", 0, "Number of days that a file should be older than in order to be deleted")
-		extFlg       = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
-		pathFlg      = flag.String("path", "", "Path to search for files to be deleted")
-		recursiveFlg = flag.Bool("recursive", false, "Search all subfolders as well")
+		versionFlg         = flag.Bool("version", false, "Display application version")
+		olderThanFlg       = flag.Int("older-than", 0, "Number of days that a file should be older than in order to be deleted")
+		extFlg             = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
+		pathFlg            = flag.String("path", "", "Path to search for files to be deleted")
+		recursiveFlg       = flag.Bool("recursive", false, "Search all subfolders as well")
 		caseInsensitiveFlg = flag.Bool("case-insensitive", false, "Match files regardless of case")
 		testFlg            = flag.Bool("test", false, "Test run")
 		debug              = flag.Bool("debug", false, "Enable debugging?")
