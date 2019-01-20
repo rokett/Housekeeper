@@ -33,11 +33,12 @@ func main() {
 		extFlg       = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
 		pathFlg      = flag.String("path", "", "Path to search for files to be deleted")
 		recursiveFlg = flag.Bool("recursive", false, "Search all subfolders as well")
-		testFlg      = flag.Bool("test", false, "Test run")
-		debug        = flag.Bool("debug", false, "Enable debugging?")
-		logger       log.Logger
-		fileInfo     []fileData
-		processed    int64
+		caseInsensitiveFlg = flag.Bool("case-insensitive", false, "Match files regardless of case")
+		testFlg            = flag.Bool("test", false, "Test run")
+		debug              = flag.Bool("debug", false, "Enable debugging?")
+		logger             log.Logger
+		fileInfo           []fileData
+		processed          int64
 	)
 
 	flag.Parse()
@@ -136,7 +137,14 @@ func main() {
 	// Now process the file list
 	for _, file := range fileInfo {
 		if !file.info.IsDir() && file.info.ModTime().Before(d) {
-			if ext != ".*" && filepath.Ext(file.path) != ext {
+			fileExt := filepath.Ext(file.path)
+
+			if *caseInsensitiveFlg {
+				fileExt = strings.ToLower(fileExt)
+				ext = strings.ToLower(ext)
+			}
+
+			if ext != ".*" && fileExt != ext {
 				continue
 			}
 

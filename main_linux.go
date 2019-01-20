@@ -105,7 +105,14 @@ func main() {
 	// Now process the file list
 	for _, file := range fileInfo {
 		if !file.info.IsDir() && file.info.ModTime().Before(d) {
-			if ext != ".*" && filepath.Ext(file.path) != ext {
+			fileExt := filepath.Ext(file.path)
+
+			if *caseInsensitiveFlg {
+				fileExt = strings.ToLower(fileExt)
+				ext = strings.ToLower(ext)
+			}
+
+			if ext != ".*" && fileExt != ext {
 				continue
 			}
 
