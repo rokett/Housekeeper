@@ -26,16 +26,17 @@ var (
 
 func main() {
 	var (
-		versionFlg   = flag.Bool("version", false, "Display application version")
-		olderThanFlg = flag.Int("older-than", 0, "Number of days that a file should be older than in order to be deleted")
-		extFlg       = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
-		pathFlg      = flag.String("path", "", "Path to search for files to be deleted")
-		recursiveFlg = flag.Bool("recursive", false, "Search all subfolders as well")
-		testFlg      = flag.Bool("test", false, "Test run")
-		debug        = flag.Bool("debug", false, "Enable debugging?")
-		logger       log.Logger
-		fileInfo     []fileData
-		processed    int64
+		versionFlg    = flag.Bool("version", false, "Display application version")
+		olderThanFlg  = flag.Int("older-than", 0, "Number of days that a file should be older than in order to be deleted")
+		extFlg        = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
+		pathFlg       = flag.String("path", "", "Path to search for files to be deleted")
+		recursiveFlg  = flag.Bool("recursive", false, "Search all subfolders as well")
+		testFlg       = flag.Bool("test", false, "Test run")
+		removeDirsFlg = flag.Bool("remove-directories", false, "Remove empty directories?")
+		debug         = flag.Bool("debug", false, "Enable debugging?")
+		logger        log.Logger
+		fileInfo      []fileData
+		processed     int64
 	)
 
 	flag.Parse()
@@ -104,31 +105,75 @@ func main() {
 
 	// Now process the file list
 	for _, file := range fileInfo {
-		if !file.info.IsDir() && file.info.ModTime().Before(d) {
-			fileExt := filepath.Ext(file.path)
+		if file.info.IsDir() {
+			continue
+		}
 
-			if *caseInsensitiveFlg {
-				fileExt = strings.ToLower(fileExt)
-				ext = strings.ToLower(ext)
+		if file.info.ModTime().After(d) {
+			continue
+		}
+
+		fileExt := filepath.Ext(file.path)
+
+		if *caseInsensitiveFlg {
+			fileExt = strings.ToLower(fileExt)
+			ext = strings.ToLower(ext)
+		}
+
+		if ext != ".*" && fileExt != ext {
+			continue
+		}
+
+		processed = processed + 1
+
+		if *testFlg {
+			level.Info(logger).Log("file", file.path, "msg", "test: would be deleted")
+
+			continue
+		}
+
+		err := os.Remove(file.path)
+		if err != nil {
+			level.Error(logger).Log("file", file.path, "msg", err)
+		} else {
+			level.Info(logger).Log("file", file.path, "msg", "deleted")
+		}
+	}
+
+	if *removeDirsFlg && *recursiveFlg {
+		for _, file := range fileInfo {
+			if !file.info.IsDir() {
+				continue
 			}
 
-			if ext != ".*" && fileExt != ext {
+			if file.path == *pathFlg {
+				continue
+			}
+
+			e, err := isDirEmpty(file.path)
+			if err != nil {
+				level.Error(logger).Log("folder", file.path, "msg", err, "task", "is directory empty?")
+
+				continue
+			}
+
+			if e == false {
 				continue
 			}
 
 			processed = processed + 1
 
 			if *testFlg {
-				level.Info(logger).Log("file", file.path, "msg", "test: would be deleted")
+				level.Info(logger).Log("folder", file.path, "msg", "test: would be deleted")
 
 				continue
 			}
 
-			err := os.Remove(file.path)
+			err = os.Remove(file.path)
 			if err != nil {
-				level.Error(logger).Log("file", file.path, "msg", err)
+				level.Error(logger).Log("folder", file.path, "msg", err)
 			} else {
-				level.Info(logger).Log("file", file.path, "msg", "deleted")
+				level.Info(logger).Log("folder", file.path, "msg", "deleted")
 			}
 		}
 	}
