@@ -49,8 +49,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	//if *olderThanFlg == 0 || *extFlg == "" || *pathFlg == "" {
-	if *extFlg == "" || *pathFlg == "" {
+	if *olderThanFlg == 0 || *extFlg == "" || *pathFlg == "" {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
