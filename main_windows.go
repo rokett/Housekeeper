@@ -191,7 +191,7 @@ func main() {
 				continue
 			}
 
-			e, err := isDirEmpty(file.path)
+			empty, err := isDirEmpty(file.path)
 			if err != nil {
 				level.Error(logger).Log("folder", file.path, "msg", err, "task", "is directory empty?")
 
@@ -201,7 +201,7 @@ func main() {
 				continue
 			}
 
-			if e == false {
+			if empty == false {
 				continue
 			}
 
