@@ -21,7 +21,7 @@ Command line flags are used to pass in parameters.
 For example; delete files with the **.log** file extension, ignoring case, which are older than **30** days and are anywhere within the **c:\logs** directory.  Additionally remove any empty directories within the **c:\logs** directory.
 
 ````Batchfile
-housekeeper.exe --ext "log" --older-than 30 --path "c:\logs" --recursive --case-insensitivem --remove-directories
+housekeeper.exe --ext "log" --older-than 30 --path "c:\logs" --recursive --case-insensitive --remove-directories
 ````
 
 Logs are printed to the Windows Event Log (if on Windows) and stdout which means you can do with them as you wish.  A good option is to pipe the output to another application which sends the logs where you want.
