@@ -6,19 +6,19 @@ Small app to delete specified files older than the specified number days from a 
 
 Command line flags are used to pass in parameters.
 
-| Flag               | Description                                                              | Default Value |
-| ------------------ | ------------------------------------------------------------------------ | ------------- |
-| ext                | Files matching the extension will be deleted. Use * to match all files.  | none          |
-| older-than         | Files which are older than the number of days specified will be deleted. | none          |
-| path               | Path to search for files to be deleted. DO NOT use trailing slashes.     | none          |
-| recursive          | Search directory path recursively.                                       | false         |
-| test               | Carry out a test run.  No files will be deleted.                         | false         |
-| debug              | Enable debug logging.                                                    | false         |
-| version            | Display version and build number                                         | false         |
-| case-insensitive   | Match file extensions regardless of case                                 | false         |
-| remove-directories | Remove **empty** subdirectories when doing a recursive search            | false         |
+| Flag               | Description                                                                             | Default Value | Required? |
+| ------------------ | --------------------------------------------------------------------------------------- | ------------- | --------- |
+| ext                | Files matching the extension will be deleted. Use * to match all files.                 | none          | yes       |
+| older-than         | Files which are older than the number of days specified will be deleted.                | none          | yes       |
+| path               | Path to search for files to be deleted. DO NOT use trailing slashes.                    | none          | yes       |
+| recursive          | Search directory path recursively.                                                      | false         | no        |
+| test               | Carry out a test run.  No files will be deleted.                                        | false         | no        |
+| debug              | Enable debug logging.                                                                   | false         | no        |
+| version            | Display version and build number                                                        | false         | no        |
+| case-insensitive   | Match file extensions regardless of case                                                | false         | no        |
+| remove-directories | Remove **empty** subdirectories, those without files in, when doing a recursive search. | false         | no        |
 
-For example; delete files with the **.log** file extension, ignoring case, which are older than **30** days and are anywhere within the **c:\logs** directory.  Additionally remove any empty directories within the **c:\logs** directory.
+For example; delete files with the **.log** file extension, ignoring case, which are older than **30** days and are anywhere within the **c:\logs** directory.  Additionally remove any empty directories, those not containing files, within the **c:\logs** directory.
 
 ````Batchfile
 housekeeper.exe --ext "log" --older-than 30 --path "c:\logs" --recursive --case-insensitive --remove-directories
