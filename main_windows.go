@@ -31,10 +31,11 @@ func main() {
 		versionFlg         = flag.Bool("version", false, "Display application version")
 		olderThanFlg       = flag.Int("older-than", 0, "Number of days that a file should be older than in order to be deleted")
 		extFlg             = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
-		pathFlg            = flag.String("path", "", "Path to search for files to be deleted")
+		pathFlg            = flag.String("path", "", "Path to search for files to be deleted; DO NOT use trailing slashes")
 		recursiveFlg       = flag.Bool("recursive", false, "Search all subfolders as well")
 		caseInsensitiveFlg = flag.Bool("case-insensitive", false, "Match files regardless of case")
 		testFlg            = flag.Bool("test", false, "Test run")
+		removeDirsFlg      = flag.Bool("remove-directories", false, "Remove empty directories?")
 		debug              = flag.Bool("debug", false, "Enable debugging?")
 		logger             log.Logger
 		fileInfo           []fileData
@@ -136,22 +137,85 @@ func main() {
 
 	// Now process the file list
 	for _, file := range fileInfo {
-		if !file.info.IsDir() && file.info.ModTime().Before(d) {
-			fileExt := filepath.Ext(file.path)
+		if file.info.IsDir() {
+			continue
+		}
 
-			if *caseInsensitiveFlg {
-				fileExt = strings.ToLower(fileExt)
-				ext = strings.ToLower(ext)
+		if file.info.ModTime().After(d) {
+			continue
+		}
+
+		fileExt := filepath.Ext(file.path)
+
+		if *caseInsensitiveFlg {
+			fileExt = strings.ToLower(fileExt)
+			ext = strings.ToLower(ext)
+		}
+
+		if ext != ".*" && fileExt != ext {
+			continue
+		}
+
+		processed = processed + 1
+
+		if *testFlg {
+			level.Info(logger).Log("file", file.path, "msg", "test: would be deleted")
+
+			msg := fmt.Sprintf("testing: %s would be deleted", file.path)
+			el.Info(5, msg)
+
+			continue
+		}
+
+		err := os.Remove(file.path)
+		if err != nil {
+			level.Error(logger).Log("file", file.path, "msg", err)
+
+			msg := fmt.Sprintf("unable to delete %s; %s", file.path, err)
+			el.Error(6, msg)
+		} else {
+			level.Info(logger).Log("file", file.path, "msg", "deleted")
+
+			msg := fmt.Sprintf("%s deleted", file.path)
+			el.Info(7, msg)
+		}
+	}
+
+	if *removeDirsFlg && *recursiveFlg {
+		for _, file := range fileInfo {
+			if !file.info.IsDir() {
+				continue
 			}
 
-			if ext != ".*" && fileExt != ext {
+			if file.path == *pathFlg {
+				continue
+			}
+
+			// There is a good chance that a subfolder has already been deleted as the slice of folders is listed from the root down.
+			// So we may well have deleted the parent of a subfolder, because all of its subfolders were empty, before we get to check the subfolder.
+			// Checking whether the folder we want to act on already exists or not, removes the possibility of an error.
+			if _, err := os.Stat(file.path); os.IsNotExist(err) {
+				continue
+			}
+
+			empty, err := isDirEmpty(file.path)
+			if err != nil {
+				level.Error(logger).Log("folder", file.path, "msg", err, "task", "is directory empty?")
+
+				msg := fmt.Sprintf("unable to check whether folder, %s, is empty; %s", file.path, err)
+				el.Error(8, msg)
+
+				continue
+			}
+
+			if empty == false {
 				continue
 			}
 
 			processed = processed + 1
 
 			if *testFlg {
-				level.Info(logger).Log("file", file.path, "msg", "test: would be deleted")
+				level.Info(logger).Log("folder", file.path, "msg", "test: would be deleted")
 
 				msg := fmt.Sprintf("testing: %s would be deleted", file.path)
 				el.Info(5, msg)
@@ -159,14 +223,14 @@ func main() {
 				continue
 			}
 
-			err := os.Remove(file.path)
+			err = os.RemoveAll(file.path)
 			if err != nil {
-				level.Error(logger).Log("file", file.path, "msg", err)
+				level.Error(logger).Log("folder", file.path, "msg", err)
 
 				msg := fmt.Sprintf("unable to delete %s; %s", file.path, err)
 				el.Error(6, msg)
 			} else {
-				level.Info(logger).Log("file", file.path, "msg", "deleted")
+				level.Info(logger).Log("folder", file.path, "msg", "deleted")
 
 				msg := fmt.Sprintf("%s deleted", file.path)
 				el.Info(7, msg)
