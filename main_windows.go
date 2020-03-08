@@ -29,7 +29,8 @@ var (
 func main() {
 	var (
 		versionFlg         = flag.Bool("version", false, "Display application version")
-		olderThanFlg       = flag.Int("older-than", 0, "Number of days that a file should be older than in order to be deleted")
+		olderThanFlg       = flag.Int("older-than", 0, "Number of units, defined by --older-than-units, that a file should be older than in order to be deleted")
+		olderThanUnitsFlg  = flag.String("older-than-units", "d", "Check for files older than (d)ays, (h)ours, or (m)inutes")
 		extFlg             = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
 		pathFlg            = flag.String("path", "", "Path to search for files to be deleted; DO NOT use trailing slashes")
 		recursiveFlg       = flag.Bool("recursive", false, "Search all subfolders as well")
@@ -54,10 +55,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	if *olderThanUnitsFlg != "d" && *olderThanUnitsFlg != "h" && *olderThanUnitsFlg != "m" {
+		fmt.Println("Invalid --older-than-units; must be (d)ays, (h)ours or (m)inutes")
+		os.Exit(1)
+	}
+
 	processed = 0
 
 	logger = log.NewLogfmtLogger(os.Stdout)
-	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app, "ext", *extFlg, "path", *pathFlg, "version", "v"+version, "build", build, "older-than", *olderThanFlg, "recursive", *recursiveFlg, "test", *testFlg)
+	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "caller", log.DefaultCaller, "app", app, "ext", *extFlg, "path", *pathFlg, "version", "v"+version, "build", build, "older-than", *olderThanFlg, "older-than-units", *olderThanUnitsFlg, "recursive", *recursiveFlg, "test", *testFlg)
 
 	if *debug {
 		logger = level.NewFilter(logger, level.AllowDebug())
@@ -86,7 +92,7 @@ func main() {
 		}
 	}
 
-	msg := fmt.Sprintf("Starting %s\nVersion %s\nBuild %s\next: %s\npath: %s\nolder-than: %d\nrecursive: %t\ntest: %t", app, version, build, *extFlg, *pathFlg, *olderThanFlg, *recursiveFlg, *testFlg)
+	msg := fmt.Sprintf("Starting %s\nVersion %s\nBuild %s\next: %s\npath: %s\nolder-than: %d\nolder-than-units: %s\nrecursive: %t\ntest: %t", app, version, build, *extFlg, *pathFlg, *olderThanFlg, *olderThanUnitsFlg, *recursiveFlg, *testFlg)
 	el.Info(1, msg)
 
 	if _, err := os.Stat(*pathFlg); os.IsNotExist(err) {
@@ -96,8 +102,40 @@ func main() {
 		os.Exit(1)
 	}
 
-	d := time.Now().AddDate(0, 0, -*olderThanFlg)
-	level.Debug(logger).Log("older-than", d)
+	var units string
+	var olderThan int
+
+	if *olderThanUnitsFlg == "d" {
+		olderThan = *olderThanFlg * 24
+		units = "h"
+	}
+
+	if *olderThanUnitsFlg == "h" {
+		olderThan = *olderThanFlg
+		units = "h"
+	}
+
+	if *olderThanUnitsFlg == "m" {
+		olderThan = *olderThanFlg
+		units = "m"
+	}
+
+	dur, err := time.ParseDuration(fmt.Sprintf("%d%s", olderThan, units))
+	if err != nil {
+		msg := fmt.Sprintf("unable to parse specified duration: %d%s", olderThan, units)
+		level.Error(logger).Log("msg", msg)
+		el.Error(9, msg)
+		os.Exit(1)
+	}
+	if dur == 0 {
+		msg := fmt.Sprintf("cannot use duration of %d", dur)
+		level.Error(logger).Log("msg", msg)
+		el.Error(10, msg)
+		os.Exit(1)
+	}
+
+	d := time.Now().Add(-dur)
+	level.Debug(logger).Log("duration", dur)
 
 	ext := "." + strings.Trim(*extFlg, ".")
 	level.Debug(logger).Log("extension", ext)

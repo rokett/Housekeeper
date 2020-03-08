@@ -9,7 +9,8 @@ Command line flags are used to pass in parameters.
 | Flag               | Description                                                                             | Default Value | Required? |
 | ------------------ | --------------------------------------------------------------------------------------- | ------------- | --------- |
 | ext                | Files matching the extension will be deleted. Use * to match all files.                 | none          | yes       |
-| older-than         | Files which are older than the number of days specified will be deleted.                | none          | yes       |
+| older-than         | Files which are older than the number of <older-than-units> specified will be deleted.  | none          | yes       |
+| older-than-units   | Specifies the time units to use; d(ays), (h)ours, or (m)inutes.                         | d             | no        |
 | path               | Path to search for files to be deleted. DO NOT use trailing slashes.                    | none          | yes       |
 | recursive          | Search directory path recursively.                                                      | false         | no        |
 | test               | Carry out a test run.  No files will be deleted.                                        | false         | no        |
@@ -18,10 +19,10 @@ Command line flags are used to pass in parameters.
 | case-insensitive   | Match file extensions regardless of case                                                | false         | no        |
 | remove-directories | Remove **empty** subdirectories, those without files in, when doing a recursive search. | false         | no        |
 
-For example; delete files with the **.log** file extension, ignoring case, which are older than **30** days and are anywhere within the **c:\logs** directory.  Additionally remove any empty directories, those not containing files, within the **c:\logs** directory.
+For example; delete files with the **.log** file extension, ignoring case, which are older than **30** hours and are anywhere within the **c:\logs** directory.  Additionally remove any empty directories, those not containing files, within the **c:\logs** directory.
 
 ````Batchfile
-housekeeper.exe --ext "log" --older-than 30 --path "c:\logs" --recursive --case-insensitive --remove-directories
+housekeeper.exe --ext "log" --older-than 30 --older-than-units h --path "c:\logs" --recursive --case-insensitive --remove-directories
 ````
 
 **NOTE:** Do not use trailing slashes in the path.  On Windows this causes the final `"` to be escaped resulting in Housekeeper thinking that the rest of the command is all part of the `path` flag.  This isn't a Housekeeper limitation technically, it's how Windows works.
