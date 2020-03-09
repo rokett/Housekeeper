@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v1.3.0] - 2020-03-09
+### Added
+- Linux build
+
+### Changed
+- #13 Added `--older-than-units` flag to specify the time units to use.  Either (d)ays, (h)ours, or (m)inutes.  For backwards compatibility the default has been set to (d)ays so if the flag is not set, nothing breaks.
+
 ## [v1.2.0] - 2019-10-26
 ### Added
 - #11 Optional `--remove-directories` flag to remove any empty subdirectories when doing a recursive search.
