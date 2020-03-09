@@ -26,18 +26,19 @@ var (
 
 func main() {
 	var (
-		versionFlg        = flag.Bool("version", false, "Display application version")
-		olderThanFlg      = flag.Int("older-than", 0, "Number of units, defined by --older-than-units, that a file should be older than in order to be deleted")
-		olderThanUnitsFlg = flag.String("older-than-units", "d", "Check for files older than (d)ays, (h)ours, or (m)inutes")
-		extFlg            = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
-		pathFlg           = flag.String("path", "", "Path to search for files to be deleted")
-		recursiveFlg      = flag.Bool("recursive", false, "Search all subfolders as well")
-		testFlg           = flag.Bool("test", false, "Test run")
-		removeDirsFlg     = flag.Bool("remove-directories", false, "Remove empty directories?")
-		debug             = flag.Bool("debug", false, "Enable debugging?")
-		logger            log.Logger
-		fileInfo          []fileData
-		processed         int64
+		versionFlg         = flag.Bool("version", false, "Display application version")
+		olderThanFlg       = flag.Int("older-than", 0, "Number of units, defined by --older-than-units, that a file should be older than in order to be deleted")
+		olderThanUnitsFlg  = flag.String("older-than-units", "d", "Check for files older than (d)ays, (h)ours, or (m)inutes")
+		extFlg             = flag.String("ext", "", "File extension to be deleted. Use * to match all files")
+		pathFlg            = flag.String("path", "", "Path to search for files to be deleted")
+		recursiveFlg       = flag.Bool("recursive", false, "Search all subfolders as well")
+		caseInsensitiveFlg = flag.Bool("case-insensitive", false, "Match files regardless of case")
+		testFlg            = flag.Bool("test", false, "Test run")
+		removeDirsFlg      = flag.Bool("remove-directories", false, "Remove empty directories?")
+		debug              = flag.Bool("debug", false, "Enable debugging?")
+		logger             log.Logger
+		fileInfo           []fileData
+		processed          int64
 	)
 
 	flag.Parse()
