@@ -20,17 +20,17 @@ goto build
     echo "=== Building x86 ==="
     set GOARCH=386
 
-    go build -o %BINARY-X86% %LDFLAGS%
+    go build -mod=vendor -o %BINARY-X86% %LDFLAGS%
 
     echo "=== Building x64 ==="
     set GOARCH=amd64
 
-    go build -o %BINARY-X64% %LDFLAGS%
+    go build -mod=vendor -o %BINARY-X64% %LDFLAGS%
 
     echo "=== Building Linux x64 ==="
     set GOOS=linux
 
-    go build -o %BINARY-LINUX% %LDFLAGS%
+    go build -mod=vendor -o %BINARY-LINUX% %LDFLAGS%
 
     goto :finalise
 
