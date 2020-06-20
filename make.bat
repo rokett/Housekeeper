@@ -5,7 +5,7 @@ set APP=Housekeeper
 set VERSION=1.3.0
 set BINARY-X86=%APP%_%VERSION%.windows.386.exe
 set BINARY-X64=%APP%_%VERSION%.windows.amd64.exe
-set BINARY-LINUX=%APP%_%VERSION%.linux.amd64.exe
+set BINARY-LINUX=%APP%_%VERSION%.linux.amd64
 
 REM Set build number from git commit hash
 for /f %%i in ('git rev-parse HEAD') do set BUILD=%%i
