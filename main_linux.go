@@ -121,7 +121,7 @@ func main() {
 
 		for _, file := range files {
 			f := fileData{
-				path: *pathFlg + "\\" + file.Name(),
+				path: *pathFlg + file.Name(),
 				info: file,
 			}
 
