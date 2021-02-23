@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -145,7 +144,7 @@ func main() {
 
 	// Build the list of files differently if we're running a recursive search or not
 	if !*recursiveFlg {
-		files, err := ioutil.ReadDir(*pathFlg)
+		files, err := os.ReadDir(*pathFlg)
 		if err != nil {
 			msg := fmt.Sprintf("unable to read directory; %s", err)
 			level.Error(logger).Log("msg", msg)
@@ -153,9 +152,16 @@ func main() {
 		}
 
 		for _, file := range files {
+			fi, err := file.Info()
+			if err != nil {
+				msg := fmt.Sprintf("unable to get file info for %s\\%s; %s", *pathFlg, file.Name(), err)
+				level.Error(logger).Log("msg", msg)
+				el.Error(4, msg)
+			}
+
 			f := fileData{
 				path: *pathFlg + "\\" + file.Name(),
-				info: file,
+				info: fi,
 			}
 
 			fileInfo = append(fileInfo, f)
