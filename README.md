@@ -17,9 +17,9 @@ Command line flags are used to pass in parameters.
 | debug              | Enable debug logging.                                                                   | false         | no        |
 | version            | Display version and build number                                                        | false         | no        |
 | case-insensitive   | Match file extensions regardless of case                                                | false         | no        |
-| remove-directories | Remove **empty** subdirectories, those without files in, when doing a recursive search. | false         | no        |
+| remove-directories | Remove **empty** subdirectories, those without files in, when doing a recursive search, **if** the directory is older than the `--older-than` flag. | false         | no        |
 
-For example; delete files with the **.log** file extension, ignoring case, which are older than **30** hours and are anywhere within the **c:\logs** directory.  Additionally remove any empty directories, those not containing files, within the **c:\logs** directory.
+For example; delete files with the **.log** file extension, ignoring case, which are older than **30 hours** and are anywhere within the **c:\logs** directory.  Additionally remove any empty directories, those not containing files, within the **c:\logs** directory if they are older than **30 hours**.
 
 ````Batchfile
 housekeeper.exe --ext "log" --older-than 30 --older-than-units h --path "c:\logs" --recursive --case-insensitive --remove-directories

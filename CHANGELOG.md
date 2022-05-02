@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [v1.4.0] - 2022-05-02
 ### Changed
 - Updated dependencies.
+- #20 Respect the `--older-than` constraint when determining whether or not to remove empty directories.
 
 ## [v1.3.1] - 2020-06-21
 ### Fixed
