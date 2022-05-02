@@ -235,6 +235,10 @@ func main() {
 				continue
 			}
 
+			if file.info.ModTime().After(d) {
+				continue
+			}
+
 			// There is a good chance that a subfolder has already been deleted as the slice of folders is listed from the root down.
 			// So we may well have deleted the parent of a subfolder, because all of its subfolders were empty, before we get to check the subfolder.
 			// Checking whether the folder we want to act on already exists or not, removes the possibility of an error.

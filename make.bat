@@ -2,7 +2,7 @@
 SETLOCAL
 
 set APP=Housekeeper
-set VERSION=1.3.1
+set VERSION=1.4.0
 set BINARY-X86=%APP%_%VERSION%.windows.386.exe
 set BINARY-X64=%APP%_%VERSION%.windows.amd64.exe
 set BINARY-LINUX=%APP%_%VERSION%.linux.amd64
